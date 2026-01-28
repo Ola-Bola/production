@@ -171,6 +171,12 @@ class DataManager():
                             'Close_lag_1': 'f8'},
                             index = pd.Index([], dtype=pd.StringDtype(), name='ticker'))
             ))
+        _logs.info("DTYPES right before returns:\n%s", features.dtypes)
+
+        features["Close"] = dd.to_numeric(features["Close"], errors="coerce")
+        features["Close_lag_1"] = dd.to_numeric(features["Close_lag_1"], errors="coerce")
+        features = features.dropna(subset=["Close", "Close_lag_1"])
+        features = features[features["Close_lag_1"] != 0]
         dd_returns = features.assign(
             Returns = lambda x: x['Close']/x['Close_lag_1'] - 1
         )
